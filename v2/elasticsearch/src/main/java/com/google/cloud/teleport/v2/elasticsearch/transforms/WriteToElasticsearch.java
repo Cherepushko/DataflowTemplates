@@ -84,24 +84,7 @@ public abstract class WriteToElasticsearch extends PTransform<PCollection<String
                             options().getMaxRetryAttempts(), getDuration(options().getMaxRetryDuration())));
         }
 
-        return jsonStrings.apply(
-                "WriteDocuments",
-                write
-                        .withIdFn(
-                                (ElasticsearchIO.Write.FieldValueExtractFn) ValueExtractorTransform.ValueExtractorFn.newBuilder()
-                                        .setFileSystemPath(options().getIdFnPath())
-                                        .setFunctionName(options().getIdFnName())
-                                        .build())
-                        .withIndexFn(
-                                (ElasticsearchIO.Write.FieldValueExtractFn) ValueExtractorTransform.ValueExtractorFn.newBuilder()
-                                        .setFileSystemPath(options().getIndexFnPath())
-                                        .setFunctionName(options().getIndexFnName())
-                                        .build())
-                        .withTypeFn(
-                                (ElasticsearchIO.Write.FieldValueExtractFn) ValueExtractorTransform.ValueExtractorFn.newBuilder()
-                                        .setFileSystemPath(options().getTypeFnPath())
-                                        .setFunctionName(options().getTypeFnName())
-                                        .build()));
+        return jsonStrings.apply("WriteDocuments", write);
     }
 
     /**
@@ -142,24 +125,6 @@ public abstract class WriteToElasticsearch extends PTransform<PCollection<String
                         options().getMaxRetryDuration() != null
                                 && options().getMaxRetryAttempts() != null,
                         "Both max retry duration and max attempts must be supplied.");
-            }
-
-            if (options().getIdFnName() != null || options().getIdFnPath() != null) {
-                checkArgument(
-                        options().getIdFnName() != null && options().getIdFnPath() != null,
-                        "Both IdFn name and path must be supplied.");
-            }
-
-            if (options().getIndexFnName() != null || options().getIndexFnPath() != null) {
-                checkArgument(
-                        options().getIndexFnName() != null && options().getIndexFnPath() != null,
-                        "Both IndexFn name and path must be supplied.");
-            }
-
-            if (options().getTypeFnName() != null || options().getTypeFnPath() != null) {
-                checkArgument(
-                        options().getTypeFnName() != null && options().getTypeFnPath() != null,
-                        "Both TypeFn name and path must be supplied.");
             }
 
             return autoBuild();
