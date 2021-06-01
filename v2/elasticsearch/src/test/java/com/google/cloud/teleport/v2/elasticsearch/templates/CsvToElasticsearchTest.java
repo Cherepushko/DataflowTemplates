@@ -251,7 +251,7 @@ public class CsvToElasticsearchTest {
     CsvToElasticsearchOptions options =
         PipelineOptionsFactory.create().as(CsvToElasticsearchOptions.class);
 
-    options.setNodeAddresses("http://my-node");
+    //options.setNodeAddresses("http://my-node");
     options.setContainsHeaders(false);
     options.setInputFileSpec(NO_HEADER_CSV_FILE_PATH);
     options.setIndex("test");

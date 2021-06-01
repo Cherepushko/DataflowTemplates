@@ -4,9 +4,10 @@ import static org.apache.beam.vendor.guava.v20_0.com.google.common.base.Precondi
 
 import com.google.auto.value.AutoValue;
 import com.google.cloud.teleport.v2.elasticsearch.options.ElasticsearchOptions;
+import com.google.cloud.teleport.v2.elasticsearch.utils.CloudId;
+import com.google.cloud.teleport.v2.elasticsearch.utils.ElasticsearchIO;
 import com.google.cloud.teleport.v2.transforms.ValueExtractorTransform;
 import java.util.Optional;
-import org.apache.beam.sdk.io.elasticsearch.ElasticsearchIO;
 import org.apache.beam.sdk.transforms.PTransform;
 import org.apache.beam.sdk.values.PCollection;
 import org.apache.beam.sdk.values.PDone;
@@ -20,7 +21,7 @@ import org.joda.time.Duration;
  * using the following options.
  *
  * <ul>
- *   <li>{@link ElasticsearchOptions#getNodeAddresses()} - comma separated list of nodes.
+ *   <li>{@link ElasticsearchOptions#getCloudID()} - cloud ID.
  *   <li>{@link ElasticsearchOptions#getIndex()} - index to output documents to.
  *   <li>{@link ElasticsearchOptions#getDocumentType()} - document type to write to.
  *   <li>{@link ElasticsearchOptions#getBatchSize()} - batch size in number of documents
@@ -59,13 +60,16 @@ public abstract class WriteToElasticsearch extends PTransform<PCollection<String
     @Override
     public PDone expand(PCollection<String> jsonStrings) {
 
+        CloudId cloudId = new CloudId(options().getCloudID());
+
         ElasticsearchIO.ConnectionConfiguration config =
                 ElasticsearchIO.ConnectionConfiguration.create(
-                        options().getNodeAddresses().split(","),
+                        new String[]{cloudId.getElasticsearchURL()},
                         options().getIndex(),
                         options().getDocumentType())
-                        .withUsername(options().getElasticsearchUsername())
-                        .withPassword(options().getElasticsearchPassword());
+                        .withApiKey(options().getApiKey())
+                        /*.withUsername(options().getElasticsearchUsername())
+                        .withPassword(options().getElasticsearchPassword())*/;
 
         ElasticsearchIO.Write write =
                 ElasticsearchIO.write()
@@ -84,17 +88,17 @@ public abstract class WriteToElasticsearch extends PTransform<PCollection<String
                 "WriteDocuments",
                 write
                         .withIdFn(
-                                ValueExtractorTransform.ValueExtractorFn.newBuilder()
+                                (ElasticsearchIO.Write.FieldValueExtractFn) ValueExtractorTransform.ValueExtractorFn.newBuilder()
                                         .setFileSystemPath(options().getIdFnPath())
                                         .setFunctionName(options().getIdFnName())
                                         .build())
                         .withIndexFn(
-                                ValueExtractorTransform.ValueExtractorFn.newBuilder()
+                                (ElasticsearchIO.Write.FieldValueExtractFn) ValueExtractorTransform.ValueExtractorFn.newBuilder()
                                         .setFileSystemPath(options().getIndexFnPath())
                                         .setFunctionName(options().getIndexFnName())
                                         .build())
                         .withTypeFn(
-                                ValueExtractorTransform.ValueExtractorFn.newBuilder()
+                                (ElasticsearchIO.Write.FieldValueExtractFn) ValueExtractorTransform.ValueExtractorFn.newBuilder()
                                         .setFileSystemPath(options().getTypeFnPath())
                                         .setFunctionName(options().getTypeFnName())
                                         .build()));
@@ -114,8 +118,8 @@ public abstract class WriteToElasticsearch extends PTransform<PCollection<String
         public WriteToElasticsearch build() {
 
             checkArgument(
-                    options().getNodeAddresses() != null,
-                    "Node address(es) must not be null.");
+                    options().getCloudID() != null,
+                    "CloudID must not be null.");
 
             checkArgument(options().getDocumentType() != null,
                     "Document type must not be null.");

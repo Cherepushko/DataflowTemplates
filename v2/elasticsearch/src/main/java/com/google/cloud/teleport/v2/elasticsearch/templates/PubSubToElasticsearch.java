@@ -35,6 +35,7 @@ import org.apache.beam.sdk.transforms.MapElements;
 import org.apache.beam.sdk.values.PCollectionTuple;
 import org.apache.beam.sdk.values.TupleTag;
 import org.apache.beam.sdk.values.TypeDescriptors;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -162,7 +163,7 @@ public class PubSubToElasticsearch {
     CoderRegistry coderRegistry = pipeline.getCoderRegistry();
 
     coderRegistry.registerCoderForType(
-        FAILSAFE_ELEMENT_CODER.getEncodedTypeDescriptor(), FAILSAFE_ELEMENT_CODER);
+            FAILSAFE_ELEMENT_CODER.getEncodedTypeDescriptor(), FAILSAFE_ELEMENT_CODER);
 
     coderRegistry.registerCoderForType(CODER.getEncodedTypeDescriptor(), CODER);
 
@@ -175,51 +176,52 @@ public class PubSubToElasticsearch {
     LOG.info("Reading from subscription: " + options.getInputSubscription());
 
     PCollectionTuple convertedPubsubMessages =
-        pipeline
-            /*
-             * Step #1: Read from a PubSub subscription.
-             */
-            .apply(
-                "ReadPubSubSubscription",
-                PubsubIO.readMessagesWithAttributes()
-                    .fromSubscription(options.getInputSubscription()))
-            /*
-             * Step #2: Transform the PubsubMessages into Json documents.
-             */
-            .apply(
-                "ConvertMessageToJsonDocument",
-                PubSubMessageToJsonDocument.newBuilder()
-                    .setJavascriptTextTransformFunctionName(
-                        options.getJavascriptTextTransformFunctionName())
-                    .setJavascriptTextTransformGcsPath(options.getJavascriptTextTransformGcsPath())
-                    .build());
+            pipeline
+                    /*
+                     * Step #1: Read from a PubSub subscription.
+                     */
+                    .apply(
+                            "ReadPubSubSubscription",
+                            PubsubIO.readMessagesWithAttributes()
+                                    .fromSubscription(options.getInputSubscription()))
+                    /*
+                     * Step #2: Transform the PubsubMessages into Json documents.
+                     */
+                    .apply(
+                            "ConvertMessageToJsonDocument",
+                            PubSubMessageToJsonDocument.newBuilder()
+                                    .setJavascriptTextTransformFunctionName(
+                                            options.getJavascriptTextTransformFunctionName())
+                                    .setJavascriptTextTransformGcsPath(options.getJavascriptTextTransformGcsPath())
+                                    .build());
 
     /*
      * Step #3a: Write Json documents into Elasticsearch using {@link ElasticsearchTransforms.WriteToElasticsearch}.
      */
     convertedPubsubMessages
-        .get(TRANSFORM_OUT)
-        .apply(
-            "GetJsonDocuments",
-            MapElements.into(TypeDescriptors.strings()).via(FailsafeElement::getPayload))
-        .apply(
-            "WriteToElasticsearch",
-            WriteToElasticsearch.newBuilder()
-                .setOptions(options.as(ElasticsearchOptions.class))
-                .build());
+            .get(TRANSFORM_OUT)
+            .apply(
+                    "GetJsonDocuments",
+                    MapElements.into(TypeDescriptors.strings()).via(FailsafeElement::getPayload))
+            .apply(
+                    "WriteToElasticsearch",
+                    WriteToElasticsearch.newBuilder()
+                            .setOptions(options.as(ElasticsearchOptions.class))
+                            .build());
 
     /*
      * Step 3b: Write elements that failed processing to deadletter table via {@link BigQueryIO}.
      */
-    convertedPubsubMessages
-        .get(TRANSFORM_DEADLETTER_OUT)
-        .apply(
-            "WriteTransformFailuresToBigQuery",
-            ErrorConverters.WritePubsubMessageErrors.newBuilder()
-                .setErrorRecordsTable(options.getDeadletterTable())
-                .setErrorRecordsTableSchema(SchemaUtils.DEADLETTER_SCHEMA)
-                .build());
-
+    if (StringUtils.isNotBlank(options.getDeadletterTable())) {
+      convertedPubsubMessages
+              .get(TRANSFORM_DEADLETTER_OUT)
+              .apply(
+                      "WriteTransformFailuresToBigQuery",
+                      ErrorConverters.WritePubsubMessageErrors.newBuilder()
+                              .setErrorRecordsTable(options.getDeadletterTable())
+                              .setErrorRecordsTableSchema(SchemaUtils.DEADLETTER_SCHEMA)
+                              .build());
+    }
     // Execute the pipeline and return the result.
     return pipeline.run();
   }

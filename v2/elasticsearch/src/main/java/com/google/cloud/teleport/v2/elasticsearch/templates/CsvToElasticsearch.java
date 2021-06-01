@@ -36,6 +36,7 @@ import org.apache.beam.sdk.transforms.WithTimestamps;
 import org.apache.beam.sdk.values.PCollectionTuple;
 import org.apache.beam.sdk.values.TupleTag;
 import org.apache.beam.sdk.values.TypeDescriptors;
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -245,17 +246,19 @@ public class CsvToElasticsearch {
     /*
      * Step 3b: Write elements that failed processing to deadletter table via {@link BigQueryIO}.
      */
-    convertedCsvLines
-        .get(PROCESSING_DEADLETTER_OUT)
-        .apply(
-            "AddTimestamps",
-            WithTimestamps.of((FailsafeElement<String, String> failures) -> new Instant()))
-        .apply(
-            "WriteFailedElementsToBigQuery",
-            WriteStringMessageErrors.newBuilder()
-                .setErrorRecordsTable(options.getDeadletterTable())
-                .setErrorRecordsTableSchema(SchemaUtils.DEADLETTER_SCHEMA)
-                .build());
+    if (StringUtils.isNotBlank(options.getDeadletterTable())) {
+      convertedCsvLines
+              .get(PROCESSING_DEADLETTER_OUT)
+              .apply(
+                      "AddTimestamps",
+                      WithTimestamps.of((FailsafeElement<String, String> failures) -> new Instant()))
+              .apply(
+                      "WriteFailedElementsToBigQuery",
+                      WriteStringMessageErrors.newBuilder()
+                              .setErrorRecordsTable(options.getDeadletterTable())
+                              .setErrorRecordsTableSchema(SchemaUtils.DEADLETTER_SCHEMA)
+                              .build());
+    }
 
     return pipeline.run();
   }

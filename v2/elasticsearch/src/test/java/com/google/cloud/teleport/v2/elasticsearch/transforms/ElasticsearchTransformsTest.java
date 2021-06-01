@@ -40,7 +40,7 @@ public class ElasticsearchTransformsTest {
         PipelineOptionsFactory.create()
             .as(ElasticsearchOptions.class);
 
-    options.setNodeAddresses(null);
+    //options.setNodeAddresses(null);
     options.setIndex("testIndex");
     options.setDocumentType("testType");
 
@@ -61,7 +61,7 @@ public class ElasticsearchTransformsTest {
             PipelineOptionsFactory.create()
                     .as(ElasticsearchOptions.class);
 
-    options.setNodeAddresses("http://my-node1");
+    //options.setNodeAddresses("http://my-node1");
     options.setIndex("testIndex");
     options.setDocumentType(null);
 
@@ -82,7 +82,7 @@ public class ElasticsearchTransformsTest {
             PipelineOptionsFactory.create()
                     .as(ElasticsearchOptions.class);
 
-    options.setNodeAddresses("http://my-node1");
+    //options.setNodeAddresses("http://my-node1");
     options.setIndex(null);
     options.setDocumentType("testType");
 
@@ -103,7 +103,7 @@ public class ElasticsearchTransformsTest {
         PipelineOptionsFactory.create()
             .as(ElasticsearchOptions.class);
 
-    options.setNodeAddresses(",");
+    //options.setNodeAddresses(",");
     options.setIndex("testIndex");
     options.setDocumentType("testType");
 
@@ -128,7 +128,7 @@ public class ElasticsearchTransformsTest {
             PipelineOptionsFactory.create()
                     .as(ElasticsearchOptions.class);
 
-    options.setNodeAddresses("http://my-node1");
+    //options.setNodeAddresses("http://my-node1");
     options.setIndex("testIndex");
     options.setDocumentType("testDoc");
     options.setMaxRetryDuration(500L);
@@ -153,7 +153,7 @@ public class ElasticsearchTransformsTest {
             PipelineOptionsFactory.create()
                     .as(ElasticsearchOptions.class);
 
-    options.setNodeAddresses("http://my-node1");
+    //options.setNodeAddresses("http://my-node1");
     options.setIndex("testIndex");
     options.setDocumentType("testDoc");
     options.setMaxRetryDuration(null);

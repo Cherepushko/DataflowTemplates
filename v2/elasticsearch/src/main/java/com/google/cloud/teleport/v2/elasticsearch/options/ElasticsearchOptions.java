@@ -20,25 +20,39 @@ public interface ElasticsearchOptions extends PipelineOptions{
     void setApplication(String application);
 
     @Description(
-            "Username for elasticsearch nodes")
+            "Specify CloudID 'HOST$ES-ID$KB-ID'")
     @Validation.Required
+    String getCloudID();
+
+    void setCloudID(String application);
+
+    @Description(
+            "Specify ApiKey")
+    @Validation.Required
+    String getApiKey();
+
+    void setApiKey(String apiKey);
+
+    @Description(
+            "Username for elasticsearch nodes")
+    //@Validation.Required
     String getElasticsearchUsername();
 
     void setElasticsearchUsername(String elasticsearchUsername);
 
     @Description(
             "Password for elasticsearch nodes")
-    @Validation.Required
+    //@Validation.Required
     String getElasticsearchPassword();
 
     void setElasticsearchPassword(String elasticsearchPassword);
 
-    @Description(
+   /* @Description(
             "Comma separated list of Elasticsearch nodes to connect to, ex: http://my-node1,http://my-node2")
     @Validation.Required
     String getNodeAddresses();
 
-    void setNodeAddresses(String nodeAddresses);
+    void setNodeAddresses(String nodeAddresses);*/
 
     @Description("The index toward which the requests will be issued, ex: my-index")
     @Validation.Required
@@ -47,7 +61,7 @@ public interface ElasticsearchOptions extends PipelineOptions{
     void setIndex(String index);
 
     @Description("The document type toward which the requests will be issued, ex: my-document-type")
-    @Validation.Required
+    @Default.String("_doc")
     String getDocumentType();
 
     void setDocumentType(String documentType);

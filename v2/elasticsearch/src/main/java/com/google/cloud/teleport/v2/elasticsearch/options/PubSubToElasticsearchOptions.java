@@ -2,7 +2,6 @@ package com.google.cloud.teleport.v2.elasticsearch.options;
 
 import com.google.cloud.teleport.v2.transforms.JavascriptTextTransformer;
 import org.apache.beam.sdk.options.Description;
-import org.apache.beam.sdk.options.Validation;
 
 /**
  * The {@link PubSubToElasticsearchOptions} class provides the custom execution options passed by
@@ -25,7 +24,6 @@ public interface PubSubToElasticsearchOptions
     @Description(
             "The dead-letter table to output to within BigQuery in <project-id>:<dataset>.<table> "
                     + "format.")
-    @Validation.Required
     String getDeadletterTable();
 
     void setDeadletterTable(String deadletterTable);
