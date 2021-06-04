@@ -58,7 +58,7 @@ public class CloudId {
             port = 443;
         }
 
-        this.elasticsearchURL = decodedParts[1]  + "." + domain + ":" + port;
-        this.kibanaURL = decodedParts[2]  + "." + domain + ":" + port;
+        this.elasticsearchURL = "https://" + decodedParts[1]  + "." + domain + ":" + port;
+        this.kibanaURL = "https://" + decodedParts[2]  + "." + domain + ":" + port;
     }
 }

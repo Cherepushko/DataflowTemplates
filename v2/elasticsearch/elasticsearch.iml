@@ -14,6 +14,8 @@
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/annotations" isTestSource="false" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/${mvn-target-dir}/generated-sources/annotations" isTestSource="false" generated="true" />
+      <excludeFolder url="file://$MODULE_DIR$/${mvn-target-dir}" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
@@ -104,7 +106,10 @@
     <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.11" level="project" />
     <orderEntry type="library" name="Maven: com.google.cloud:google-cloud-bigquery:1.128.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.api.grpc:proto-google-iam-v1:1.0.11" level="project" />
+    <orderEntry type="library" name="Maven: com.google.http-client:google-http-client-gson:1.39.2" level="project" />
     <orderEntry type="library" name="Maven: com.google.cloud:google-cloud-core-http:1.94.5" level="project" />
+    <orderEntry type="library" name="Maven: com.google.oauth-client:google-oauth-client:1.31.4" level="project" />
+    <orderEntry type="library" name="Maven: com.google.http-client:google-http-client-apache-v2:1.39.2" level="project" />
     <orderEntry type="library" name="Maven: com.google.http-client:google-http-client-appengine:1.39.2" level="project" />
     <orderEntry type="library" name="Maven: com.google.api:gax-httpjson:0.80.0" level="project" />
     <orderEntry type="library" name="Maven: io.opencensus:opencensus-contrib-http-util:0.28.0" level="project" />
@@ -117,10 +122,6 @@
     <orderEntry type="library" name="Maven: com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:guava:26.0-jre" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.mojo:animal-sniffer-annotations:1.14" level="project" />
-    <orderEntry type="library" name="Maven: com.google.api-client:google-api-client:1.31.2" level="project" />
-    <orderEntry type="library" name="Maven: com.google.oauth-client:google-oauth-client:1.31.4" level="project" />
-    <orderEntry type="library" name="Maven: com.google.http-client:google-http-client-gson:1.38.1" level="project" />
-    <orderEntry type="library" name="Maven: com.google.http-client:google-http-client-apache-v2:1.38.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.beam:beam-sdks-java-core:2.29.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.beam:beam-model-pipeline:2.29.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-api:2.6.2" level="project" />
@@ -152,6 +153,7 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.google.flogger:flogger-system-backend:0.5.1" level="project" />
     <orderEntry type="library" name="Maven: com.google.api:gax-grpc:1.60.1" level="project" />
     <orderEntry type="library" name="Maven: io.grpc:grpc-protobuf:1.32.2" level="project" />
+    <orderEntry type="library" name="Maven: com.google.api-client:google-api-client:1.31.1" level="project" />
     <orderEntry type="library" name="Maven: com.google.api:api-common:1.10.1" level="project" />
     <orderEntry type="library" name="Maven: com.google.apis:google-api-services-healthcare:v1beta1-rev20210217-1.31.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.apis:google-api-services-pubsub:v1-rev20210208-1.31.0" level="project" />

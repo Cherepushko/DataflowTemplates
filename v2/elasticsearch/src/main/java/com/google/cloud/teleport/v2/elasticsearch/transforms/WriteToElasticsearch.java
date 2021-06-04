@@ -67,9 +67,7 @@ public abstract class WriteToElasticsearch extends PTransform<PCollection<String
                         new String[]{cloudId.getElasticsearchURL()},
                         options().getIndex(),
                         options().getDocumentType())
-                        .withApiKey(options().getApiKey())
-                        /*.withUsername(options().getElasticsearchUsername())
-                        .withPassword(options().getElasticsearchPassword())*/;
+                        .withApiKey(options().getApiKey());
 
         ElasticsearchIO.Write write =
                 ElasticsearchIO.write()

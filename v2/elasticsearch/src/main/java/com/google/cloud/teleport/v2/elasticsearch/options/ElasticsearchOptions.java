@@ -55,7 +55,7 @@ public interface ElasticsearchOptions extends PipelineOptions{
     void setNodeAddresses(String nodeAddresses);*/
 
     @Description("The index toward which the requests will be issued, ex: my-index")
-    @Validation.Required
+    //@Validation.Required
     String getIndex();
 
     void setIndex(String index);
