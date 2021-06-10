@@ -1416,7 +1416,12 @@ public class ElasticsearchIO {
                     "{ \"update\" : %s }%n{ \"doc\" : %s, \"doc_as_upsert\" : true }%n",
                     documentMetadata, document));
           } else {
-            batch.add(String.format("{ \"index\" : %s }%n%s%n", documentMetadata, document));
+            //batch.add(String.format("{ \"index\" : %s }%n%s%n", documentMetadata, document));
+            if(document != null) {
+              document = document.replace("timestamp", "@timestamp");
+            }
+
+            batch.add(String.format("{ \"create\" : %s }%n%s%n", documentMetadata, document));
           }
         }
 
@@ -1457,6 +1462,7 @@ public class ElasticsearchIO {
             new NStringEntity(bulkRequest.toString(), ContentType.APPLICATION_JSON);
         Request request = new Request("POST", endPoint);
         request.addParameters(Collections.emptyMap());
+        //request.addParameter("op_type", "create");
         request.setEntity(requestBody);
         response = restClient.performRequest(request);
         responseEntity = new BufferedHttpEntity(response.getEntity());
