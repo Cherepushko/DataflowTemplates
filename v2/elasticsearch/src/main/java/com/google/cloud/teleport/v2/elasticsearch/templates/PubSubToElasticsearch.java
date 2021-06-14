@@ -18,6 +18,7 @@ package com.google.cloud.teleport.v2.elasticsearch.templates;
 import com.google.cloud.teleport.v2.coders.FailsafeElementCoder;
 import com.google.cloud.teleport.v2.elasticsearch.options.ElasticsearchOptions;
 import com.google.cloud.teleport.v2.elasticsearch.options.PubSubToElasticsearchOptions;
+import com.google.cloud.teleport.v2.elasticsearch.transforms.AddTimestamp;
 import com.google.cloud.teleport.v2.elasticsearch.transforms.PubSubMessageToJsonDocument;
 import com.google.cloud.teleport.v2.elasticsearch.transforms.WriteToElasticsearch;
 import com.google.cloud.teleport.v2.transforms.ErrorConverters;
@@ -203,6 +204,7 @@ public class PubSubToElasticsearch {
             .apply(
                     "GetJsonDocuments",
                     MapElements.into(TypeDescriptors.strings()).via(FailsafeElement::getPayload))
+            .apply("Add timestamp", new AddTimestamp())
             .apply(
                     "WriteToElasticsearch",
                     WriteToElasticsearch.newBuilder()
