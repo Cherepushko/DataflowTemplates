@@ -19,10 +19,9 @@ import com.google.cloud.teleport.v2.coders.FailsafeElementCoder;
 import com.google.cloud.teleport.v2.elasticsearch.options.ElasticsearchOptions;
 import com.google.cloud.teleport.v2.elasticsearch.options.PubSubToElasticsearchOptions;
 import com.google.cloud.teleport.v2.elasticsearch.transforms.AddTimestamp;
+import com.google.cloud.teleport.v2.elasticsearch.transforms.FailedPubsubMessageToPubsubTopicFn;
 import com.google.cloud.teleport.v2.elasticsearch.transforms.PubSubMessageToJsonDocument;
 import com.google.cloud.teleport.v2.elasticsearch.transforms.WriteToElasticsearch;
-import com.google.cloud.teleport.v2.transforms.ErrorConverters;
-import com.google.cloud.teleport.v2.utils.SchemaUtils;
 import com.google.cloud.teleport.v2.values.FailsafeElement;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.PipelineResult;
@@ -33,6 +32,7 @@ import org.apache.beam.sdk.io.gcp.pubsub.PubsubMessage;
 import org.apache.beam.sdk.io.gcp.pubsub.PubsubMessageWithAttributesCoder;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.transforms.MapElements;
+import org.apache.beam.sdk.transforms.ParDo;
 import org.apache.beam.sdk.values.PCollectionTuple;
 import org.apache.beam.sdk.values.TupleTag;
 import org.apache.beam.sdk.values.TypeDescriptors;
@@ -212,17 +212,15 @@ public class PubSubToElasticsearch {
                             .build());
 
     /*
-     * Step 3b: Write elements that failed processing to deadletter table via {@link BigQueryIO}.
+     * Step 3b: Write elements that failed processing to deadletter PubSub topic via {@link PubSubIO}.
      */
-    if (StringUtils.isNotBlank(options.getDeadletterTable())) {
+    if (StringUtils.isNotBlank(options.getOutputDeadletterTopic())) {
       convertedPubsubMessages
               .get(TRANSFORM_DEADLETTER_OUT)
+              .apply(ParDo.of(new FailedPubsubMessageToPubsubTopicFn()))
               .apply(
-                      "WriteTransformFailuresToBigQuery",
-                      ErrorConverters.WritePubsubMessageErrors.newBuilder()
-                              .setErrorRecordsTable(options.getDeadletterTable())
-                              .setErrorRecordsTableSchema(SchemaUtils.DEADLETTER_SCHEMA)
-                              .build());
+                      "writeFailureMessages",
+                      PubsubIO.writeMessages().to(options.getOutputDeadletterTopic()));
     }
     // Execute the pipeline and return the result.
     return pipeline.run();

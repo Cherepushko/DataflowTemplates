@@ -1,6 +1,7 @@
 package com.google.cloud.teleport.v2.elasticsearch.options;
 
 import com.google.cloud.teleport.v2.transforms.JavascriptTextTransformer;
+import org.apache.beam.sdk.options.Default;
 import org.apache.beam.sdk.options.Description;
 
 /**
@@ -22,9 +23,14 @@ public interface PubSubToElasticsearchOptions
     void setInputSubscription(String inputSubscription);
 
     @Description(
-            "The dead-letter table to output to within BigQuery in <project-id>:<dataset>.<table> "
-                    + "format.")
-    String getDeadletterTable();
+            "The output dead-letter topic to output to.")
+    String getOutputDeadletterTopic();
 
-    void setDeadletterTable(String deadletterTable);
+    void setOutputDeadletterTopic(String outputDeadletterTopic);
+
+    @Description("Define using Data Stream to use op_type CREATE instead of INDEX")
+    @Default.Boolean(true)
+    Boolean getUseDataStream();
+
+    void setUseDataStream(Boolean useDataStream);
 }
