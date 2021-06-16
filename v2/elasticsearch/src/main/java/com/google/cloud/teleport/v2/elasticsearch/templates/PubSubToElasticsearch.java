@@ -19,8 +19,10 @@ import com.google.cloud.teleport.v2.coders.FailsafeElementCoder;
 import com.google.cloud.teleport.v2.elasticsearch.options.ElasticsearchOptions;
 import com.google.cloud.teleport.v2.elasticsearch.options.PubSubToElasticsearchOptions;
 import com.google.cloud.teleport.v2.elasticsearch.transforms.AddTimestamp;
+import com.google.cloud.teleport.v2.elasticsearch.transforms.AuditDashboard;
 import com.google.cloud.teleport.v2.elasticsearch.transforms.PubSubMessageToJsonDocument;
 import com.google.cloud.teleport.v2.elasticsearch.transforms.WriteToElasticsearch;
+import com.google.cloud.teleport.v2.elasticsearch.utils.CloudId;
 import com.google.cloud.teleport.v2.transforms.ErrorConverters;
 import com.google.cloud.teleport.v2.utils.SchemaUtils;
 import com.google.cloud.teleport.v2.values.FailsafeElement;
@@ -39,6 +41,8 @@ import org.apache.beam.sdk.values.TypeDescriptors;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 /**
  * The {@link PubSubToElasticsearch} pipeline is a streaming pipeline which ingests data in JSON
@@ -145,6 +149,13 @@ public class PubSubToElasticsearch {
         PipelineOptionsFactory.fromArgs(args)
             .withValidation()
             .as(PubSubToElasticsearchOptions.class);
+
+    //Create Audit dashboard in Kibana
+    try {
+      AuditDashboard.createDashboard(pubSubToElasticsearchOptions.getCloudID());
+    } catch (IOException e) {
+      LOG.warn("Unable to create Audit dashboard in Kibana.", e);
+    }
 
     run(pubSubToElasticsearchOptions);
   }

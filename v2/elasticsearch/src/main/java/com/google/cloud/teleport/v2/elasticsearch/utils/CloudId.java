@@ -9,6 +9,7 @@ import java.util.Base64;
 public class CloudId {
     private String elasticsearchURL;
     private String kibanaURL;
+    private String kibanaHost;
 
     public String getElasticsearchURL() {
         return elasticsearchURL;
@@ -24,6 +25,14 @@ public class CloudId {
 
     public void setKibanaURL(String kibanaURL) {
         this.kibanaURL = kibanaURL;
+    }
+
+    public String getKibanaHost() {
+        return kibanaHost;
+    }
+
+    public void setKibanaHost(String kibanaHost) {
+        this.kibanaHost = kibanaHost;
     }
 
     public CloudId(String cloudId){
@@ -60,5 +69,7 @@ public class CloudId {
 
         this.elasticsearchURL = "https://" + decodedParts[1]  + "." + domain + ":" + port;
         this.kibanaURL = "https://" + decodedParts[2]  + "." + domain + ":" + port;
+
+        this.kibanaHost = decodedParts[2]  + "." + domain;
     }
 }
