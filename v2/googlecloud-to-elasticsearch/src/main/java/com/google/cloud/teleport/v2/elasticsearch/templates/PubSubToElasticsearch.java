@@ -19,6 +19,7 @@ import com.google.cloud.teleport.v2.coders.FailsafeElementCoder;
 import com.google.cloud.teleport.v2.elasticsearch.options.PubSubToElasticsearchOptions;
 import com.google.cloud.teleport.v2.elasticsearch.transforms.FailedPubsubMessageToPubsubTopicFn;
 import com.google.cloud.teleport.v2.elasticsearch.transforms.ProcessEventMetadata;
+import com.google.cloud.teleport.v2.elasticsearch.transforms.ProcessValidateJsonFields;
 import com.google.cloud.teleport.v2.elasticsearch.transforms.PubSubMessageToJsonDocument;
 import com.google.cloud.teleport.v2.elasticsearch.transforms.WriteToElasticsearch;
 import com.google.cloud.teleport.v2.elasticsearch.utils.ElasticsearchIndex;
@@ -148,6 +149,7 @@ public class PubSubToElasticsearch {
             "GetJsonDocuments",
             MapElements.into(TypeDescriptors.strings()).via(FailsafeElement::getPayload))
         .apply("Insert metadata", new ProcessEventMetadata())
+        .apply("Validate Json fields", new ProcessValidateJsonFields())
         .apply(
             "WriteToElasticsearch",
             WriteToElasticsearch.newBuilder()
